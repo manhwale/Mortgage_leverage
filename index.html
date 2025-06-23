@@ -75,7 +75,7 @@
                 <div class="space-y-6">
                     <!-- Property Value -->
                     <div>
-                        <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (€)</label>
+                        <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
                         <div class="flex items-center space-x-4 mt-2">
                             <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="2000000" class="flex-grow">
                             <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="2000000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
@@ -230,8 +230,8 @@
 
             // === HELPER FUNCTIONS ===
             const formatCurrency = (value) => {
-                if (isNaN(value)) return '€ -';
-                return '€ ' + Math.round(value).toLocaleString('de-DE');
+                if (isNaN(value)) return 'CHF -';
+                return 'CHF ' + Math.round(value).toLocaleString('de-CH');
             };
 
             const formatPercent = (value, decimals = 2) => {
@@ -242,11 +242,6 @@
             const formatMultiplier = (value) => {
                 if (isNaN(value) || !isFinite(value)) return '- x';
                 return value.toFixed(1) + 'x';
-            };
-            
-            // Sync slider and number inputs
-            const syncInputs = (source, target) => {
-                target.value = source.value;
             };
 
             // === MAIN CALCULATION LOGIC ===
@@ -292,35 +287,38 @@
                 outputs.breakEven.textContent = formatPercent(breakEvenAppreciation, 2);
                 
                 // Change color of profit based on value
-                if (netProfit > 0) {
-                    outputs.netProfit.classList.remove('text-red-400');
-                    outputs.netProfit.classList.add('text-white');
-                } else {
-                    outputs.netProfit.classList.remove('text-white');
-                    outputs.netProfit.classList.add('text-red-400');
-                }
+                outputs.netProfit.classList.toggle('text-red-400', netProfit < 0);
+                outputs.netProfit.classList.toggle('text-white', netProfit >= 0);
             }
 
-            // === EVENT LISTENERS ===
-            Object.values(inputs).forEach(input => {
-                input.addEventListener('input', calculateAndDisplay);
-            });
-            
-            // Add listeners for syncing sliders and number boxes
-            inputs.propertyValueRange.addEventListener('input', () => syncInputs(inputs.propertyValueRange, inputs.propertyValue));
-            inputs.propertyValue.addEventListener('input', () => syncInputs(inputs.propertyValue, inputs.propertyValueRange));
-            
-            inputs.downPaymentRange.addEventListener('input', () => syncInputs(inputs.downPaymentRange, inputs.downPayment));
-            inputs.downPayment.addEventListener('input', () => syncInputs(inputs.downPayment, inputs.downPaymentRange));
-            
-            inputs.interestRateRange.addEventListener('input', () => syncInputs(inputs.interestRateRange, inputs.interestRate));
-            inputs.interestRate.addEventListener('input', () => syncInputs(inputs.interestRate, inputs.interestRateRange));
-            
-            inputs.appreciationRange.addEventListener('input', () => syncInputs(inputs.appreciationRange, inputs.appreciation));
-            inputs.appreciation.addEventListener('input', () => syncInputs(inputs.appreciation, inputs.appreciationRange));
+            // === EVENT LISTENERS (NEW, FIXED VERSION) ===
+            function setupListenersForPair(rangeId, numberId) {
+                const rangeInput = document.getElementById(rangeId);
+                const numberInput = document.getElementById(numberId);
 
-            inputs.timeHorizonRange.addEventListener('input', () => syncInputs(inputs.timeHorizonRange, inputs.timeHorizon));
-            inputs.timeHorizon.addEventListener('input', () => syncInputs(inputs.timeHorizon, inputs.timeHorizonRange));
+                // Listener for the SLIDER
+                rangeInput.addEventListener('input', () => {
+                    // 1. First, sync the number box to the slider
+                    numberInput.value = rangeInput.value;
+                    // 2. Then, run the calculation
+                    calculateAndDisplay();
+                });
+
+                // Listener for the NUMBER INPUT
+                numberInput.addEventListener('input', () => {
+                    // 1. First, sync the slider to the number box
+                    rangeInput.value = numberInput.value;
+                    // 2. Then, run the calculation
+                    calculateAndDisplay();
+                });
+            }
+
+            // Set up listeners for each pair
+            setupListenersForPair('propertyValueRange', 'propertyValue');
+            setupListenersForPair('downPaymentRange', 'downPayment');
+            setupListenersForPair('interestRateRange', 'interestRate');
+            setupListenersForPair('appreciationRange', 'appreciation');
+            setupListenersForPair('timeHorizonRange', 'timeHorizon');
 
             // Initial calculation on page load
             calculateAndDisplay();
