@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Swiss Real Estate Calculator | Manwhale Labs</title>
+    <meta name="description" content="An advanced financial calculator for the Swiss real estate market, including imputed rental value (Eigenmietwert), tax deductions, and a savings vs. renting comparison.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 8px; background: #4a5568;
+            border-radius: 5px; outline: none; opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover { opacity: 1; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; background: #4fd1c5;
+            cursor: pointer; border-radius: 50%;
+            border: 2px solid #1a202c;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px; height: 20px; background: #4fd1c5;
+            cursor: pointer; border-radius: 50%;
+            border: 2px solid #1a202c;
+        }
+        .output-card {
+            background-color: #2d3748; border-radius: 0.75rem;
+            padding: 1rem; display: flex; flex-direction: column;
+            justify-content: center;
+        }
+        .hero-output-blue {
+            background-color: #2c5282; /* blue-800 */
+            border-color: #63b3ed; /* blue-400 */
+        }
+        .hero-output-teal {
+            background-color: #234e52; /* teal-900 */
+            border-color: #4fd1c5; /* teal-400 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-teal-300">Advanced Swiss Real Estate Calculator</h1>
+            <p class="text-gray-400 mt-3 max-w-3xl mx-auto">A detailed tool including imputed rental value (Eigenmietwert), tax deductions, and a true cost of ownership vs. renting comparison for the Swiss market.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
+
+            <!-- === INPUTS === -->
+            <div class="md:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Investment & Sale Parameters</h2>
+
+                <div class="space-y-6">
+                    <!-- Property Value -->
+                    <div>
+                        <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="1500000" class="flex-grow">
+                            <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="1500000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                     <!-- Down Payment -->
+                    <div>
+                        <label for="downPayment" class="block text-sm font-medium text-gray-300">Down Payment (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="downPaymentRange" min="20" max="100" step="1" value="20" class="flex-grow">
+                            <input type="number" id="downPayment" min="20" max="100" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                     <!-- Mortgage Interest Rate -->
+                    <div>
+                        <label for="interestRate" class="block text-sm font-medium text-gray-300">Mortgage Interest Rate (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="interestRateRange" min="0.5" max="10" step="0.1" value="2.0" class="flex-grow">
+                            <input type="number" id="interestRate" min="0.5" max="10" step="0.1" value="2.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                     <!-- Time Horizon -->
+                    <div>
+                        <label for="timeHorizon" class="block text-sm font-medium text-gray-300">Time Horizon (Years)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="timeHorizonRange" min="1" max="40" step="1" value="10" class="flex-grow">
+                            <input type="number" id="timeHorizon" min="1" max="40" step="1" value="10" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    <!-- Annual Property Appreciation -->
+                    <div>
+                        <label for="appreciation" class="block text-sm font-medium text-gray-300">Annual Property Appreciation (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="appreciationRange" min="-5" max="15" step="0.1" value="3.0" class="flex-grow">
+                            <input type="number" id="appreciation" min="-5" max="15" step="0.1" value="3.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold mt-8 mb-6 text-teal-400 border-b border-gray-700 pb-2">Annual Costs & Taxes</h2>
+                <div class="space-y-6">
+                     <!-- Monthly Rent -->
+                    <div>
+                        <label for="monthlyRent" class="block text-sm font-medium text-gray-300">Comparable Monthly Rent (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="monthlyRentRange" min="1000" max="10000" step="100" value="3500" class="flex-grow">
+                            <input type="number" id="monthlyRent" min="1000" max="10000" step="100" value="3500" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                     <!-- Marginal Tax Rate -->
+                    <div>
+                        <label for="taxRate" class="block text-sm font-medium text-gray-300">Marginal Tax Rate (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="taxRateRange" min="10" max="50" step="1" value="30" class="flex-grow">
+                            <input type="number" id="taxRate" min="10" max="50" step="1" value="30" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    <!-- Actual Maintenance -->
+                    <div>
+                        <label for="actualMaintenanceRate" class="block text-sm font-medium text-gray-300">Actual Maintenance (% of Property Value)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="actualMaintenanceRateRange" min="0.1" max="3" step="0.1" value="1.0" class="flex-grow">
+                            <input type="number" id="actualMaintenanceRate" min="0.1" max="3" step="0.1" value="1.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === OUTPUTS === -->
+            <div class="md:col-span-3">
+                 <h2 class="text-2xl font-bold mb-4 text-blue-300 text-center md:text-left">Annual Ownership Analysis</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    
+                    <div class="output-card hero-output-blue col-span-2 lg:col-span-3 text-center p-6 border-2">
+                        <span class="text-lg font-medium text-blue-200">Net Annual Savings vs. Renting</span>
+                        <span id="outputAnnualSavings" class="text-4xl md:text-5xl font-bold text-white">-</span>
+                    </div>
+
+                     <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">True Annual Cost of Owning</span>
+                        <span id="outputTrueCost" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Equivalent Annual Rent</span>
+                        <span id="outputAnnualRent" class="text-2xl font-bold">-</span>
+                    </div>
+                    
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Annual Tax Impact</span>
+                        <span id="outputTaxImpact" class="text-2xl font-bold">-</span>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold mb-4 text-teal-300 text-center md:text-left">Analysis After Sale</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="output-card hero-output-teal col-span-2 lg:col-span-3 text-center p-6 border-2">
+                        <span class="text-lg font-medium text-teal-200">Final Net Profit (After Tax)</span>
+                        <span id="outputFinalProfit" class="text-4xl md:text-5xl font-bold text-white">-</span>
+                    </div>
+                    
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Return on Equity (ROE)</span>
+                        <span id="outputROE" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Eq. Stock Market Return</span>
+                        <span id="outputStockReturn" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Gross Profit (Appreciation)</span>
+                        <span id="outputGrossProfit" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Total Ownership Costs</span>
+                        <span id="outputTotalCosts" class="text-2xl font-bold">-</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700 text-gray-500">
+            <p><a href="/" class="text-teal-400 hover:underline">Back to Manwhale Labs Home</a></p>
+            <p class="mt-4">Built by Manwhale Labs. For educational and illustrative purposes only. Not financial advice.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = {
+                propertyValue: document.getElementById('propertyValue'),
+                propertyValueRange: document.getElementById('propertyValueRange'),
+                downPayment: document.getElementById('downPayment'),
+                downPaymentRange: document.getElementById('downPaymentRange'),
+                interestRate: document.getElementById('interestRate'),
+                interestRateRange: document.getElementById('interestRateRange'),
+                timeHorizon: document.getElementById('timeHorizon'),
+                timeHorizonRange: document.getElementById('timeHorizonRange'),
+                appreciation: document.getElementById('appreciation'),
+                appreciationRange: document.getElementById('appreciationRange'),
+                monthlyRent: document.getElementById('monthlyRent'),
+                monthlyRentRange: document.getElementById('monthlyRentRange'),
+                taxRate: document.getElementById('taxRate'),
+                taxRateRange: document.getElementById('taxRateRange'),
+                actualMaintenanceRate: document.getElementById('actualMaintenanceRate'),
+                actualMaintenanceRateRange: document.getElementById('actualMaintenanceRateRange'),
+            };
+
+            const outputs = {
+                annualSavings: document.getElementById('outputAnnualSavings'),
+                trueCost: document.getElementById('outputTrueCost'),
+                annualRent: document.getElementById('outputAnnualRent'),
+                taxImpact: document.getElementById('outputTaxImpact'),
+                finalProfit: document.getElementById('outputFinalProfit'),
+                roe: document.getElementById('outputROE'),
+                stockReturn: document.getElementById('outputStockReturn'),
+                grossProfit: document.getElementById('outputGrossProfit'),
+                totalCosts: document.getElementById('outputTotalCosts'),
+            };
+
+            const formatCurrency = (value, symbol = 'CHF') => {
+                const roundedValue = Math.round(value);
+                const sign = roundedValue < 0 ? '-' : '';
+                return `${sign}${symbol} ${Math.abs(roundedValue).toLocaleString('de-CH')}`;
+            };
+            const formatPercent = (value, decimals = 1) => {
+                 if (isNaN(value) || !isFinite(value)) return '- %';
+                return value.toFixed(decimals) + ' %';
+            };
+
+            function calculateAndDisplay() {
+                const propertyValue = parseFloat(inputs.propertyValue.value);
+                const downPaymentPercent = parseFloat(inputs.downPayment.value) / 100;
+                const interestRate = parseFloat(inputs.interestRate.value) / 100;
+                const years = parseInt(inputs.timeHorizon.value);
+                const appreciationRate = parseFloat(inputs.appreciation.value) / 100;
+                const monthlyRent = parseFloat(inputs.monthlyRent.value);
+                const taxRate = parseFloat(inputs.taxRate.value) / 100;
+                const actualMaintenanceRate = parseFloat(inputs.actualMaintenanceRate.value) / 100;
+
+                const imputedRentalValueRate = 0.035; 
+                const deductibleMaintenanceRate = 0.20;
+
+                const downPaymentAmount = propertyValue * downPaymentPercent;
+                const loanAmount = propertyValue - downPaymentAmount;
+                const annualMortgageInterest = loanAmount * interestRate;
+                const actualMaintenanceCost = propertyValue * actualMaintenanceRate;
+                const cashOutflows = annualMortgageInterest + actualMaintenanceCost;
+                
+                const imputedRentalValue = propertyValue * imputedRentalValueRate;
+                const deductibleMaintenance = imputedRentalValue * deductibleMaintenanceRate;
+                const netChangeToTaxableIncome = imputedRentalValue - annualMortgageInterest - deductibleMaintenance;
+                const annualTaxImpact = netChangeToTaxableIncome * taxRate;
+                
+                const trueAnnualCostOfOwning = cashOutflows + annualTaxImpact;
+                const annualRentCost = monthlyRent * 12;
+                const netAnnualSavings = annualRentCost - trueAnnualCostOfOwning;
+
+                const futurePropertyValue = propertyValue * Math.pow(1 + appreciationRate, years);
+                const grossProfitOnSale = futurePropertyValue - propertyValue;
+                const totalOwnershipCosts = trueAnnualCostOfOwning * years;
+                const finalNetProfit = grossProfitOnSale - totalOwnershipCosts;
+                const roe = downPaymentAmount > 0 ? (finalNetProfit / downPaymentAmount) * 100 : 0;
+                
+                let stockReturn = NaN;
+                const finalEquity = downPaymentAmount + finalNetProfit;
+                if (downPaymentAmount > 0 && finalEquity > 0) {
+                     stockReturn = (Math.pow(finalEquity / downPaymentAmount, 1 / years) - 1) * 100;
+                }
+
+                outputs.annualSavings.textContent = formatCurrency(netAnnualSavings);
+                outputs.trueCost.textContent = formatCurrency(trueAnnualCostOfOwning);
+                outputs.annualRent.textContent = formatCurrency(annualRentCost);
+                outputs.taxImpact.textContent = formatCurrency(annualTaxImpact);
+                outputs.taxImpact.classList.toggle('text-red-400', annualTaxImpact > 0);
+                outputs.taxImpact.classList.toggle('text-green-400', annualTaxImpact <= 0);
+
+                outputs.finalProfit.textContent = formatCurrency(finalNetProfit);
+                outputs.roe.textContent = formatPercent(roe);
+                outputs.stockReturn.textContent = formatPercent(stockReturn, 2);
+                outputs.grossProfit.textContent = formatCurrency(grossProfitOnSale);
+                outputs.totalCosts.textContent = formatCurrency(totalOwnershipCosts);
+
+                outputs.annualSavings.classList.toggle('text-red-400', netAnnualSavings < 0);
+                outputs.annualSavings.classList.toggle('text-white', netAnnualSavings >= 0);
+                outputs.finalProfit.classList.toggle('text-red-400', finalNetProfit < 0);
+                outputs.finalProfit.classList.toggle('text-white', finalNetProfit >= 0);
+            }
+
+            function setupListenersForPair(rangeId, numberId) {
+                const rangeInput = document.getElementById(rangeId);
+                const numberInput = document.getElementById(numberId);
+                if (!rangeInput || !numberInput) return;
+
+                const eventHandler = () => {
+                    if (document.activeElement.id === rangeId) {
+                        numberInput.value = rangeInput.value;
+                    } else if (document.activeElement.id === numberId) {
+                        rangeInput.value = numberInput.value;
+                    }
+                    calculateAndDisplay();
+                };
+
+                rangeInput.addEventListener('input', eventHandler);
+                numberInput.addEventListener('input', eventHandler);
+                 numberInput.addEventListener('change', () => { // Syncs when user blurs number input
+                    rangeInput.value = numberInput.value;
+                    calculateAndDisplay();
+                });
+            }
+
+            const inputPairs = [
+                ['propertyValueRange', 'propertyValue'],
+                ['downPaymentRange', 'downPayment'],
+                ['interestRateRange', 'interestRate'],
+                ['timeHorizonRange', 'timeHorizon'],
+                ['appreciationRange', 'appreciation'],
+                ['monthlyRentRange', 'monthlyRent'],
+                ['taxRateRange', 'taxRate'],
+                ['actualMaintenanceRateRange', 'actualMaintenanceRate']
+            ];
+            inputPairs.forEach(pair => setupListenersForPair(pair[0], pair[1]));
+
+            calculateAndDisplay();
+        });
+    </script>
+</body>
+</html>

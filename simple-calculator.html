@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Leverage &amp; Profit Calculator | Manwhale Labs</title>
+    <meta name="description" content="An interactive calculator to simulate mortgage leverage, interest costs, and potential profit from property appreciation. Perfect for real estate investors and homebuyers in Switzerland and Europe.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        /* Custom styles for range inputs */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4a5568; /* gray-700 */
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4fd1c5; /* teal-400 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a202c; /* gray-900 */
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4fd1c5; /* teal-400 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1a202c; /* gray-900 */
+        }
+        .output-card {
+            background-color: #2d3748; /* gray-800 */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-teal-300">Real Estate Leverage Dashboard</h1>
+            <p class="text-gray-400 mt-3 max-w-2xl mx-auto">An interactive tool to see how leverage, appreciation, and interest rates affect your real estate investment profits over time. Made for the community on Reddit!</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
+
+            <!-- === INPUTS === -->
+            <div class="md:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Input Parameters</h2>
+
+                <div class="space-y-6">
+                    <!-- Property Value -->
+                    <div>
+                        <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="2000000" class="flex-grow">
+                            <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="2000000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+
+                    <!-- Down Payment -->
+                    <div>
+                        <label for="downPayment" class="block text-sm font-medium text-gray-300">Down Payment (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="downPaymentRange" min="5" max="100" step="1" value="20" class="flex-grow">
+                            <input type="number" id="downPayment" min="5" max="100" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+
+                    <!-- Mortgage Interest Rate -->
+                    <div>
+                        <label for="interestRate" class="block text-sm font-medium text-gray-300">Mortgage Interest Rate (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="interestRateRange" min="0.5" max="10" step="0.1" value="1.3" class="flex-grow">
+                            <input type="number" id="interestRate" min="0.5" max="10" step="0.1" value="1.3" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    
+                    <!-- Annual Property Appreciation -->
+                    <div>
+                        <label for="appreciation" class="block text-sm font-medium text-gray-300">Annual Property Appreciation (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="appreciationRange" min="-5" max="15" step="0.1" value="3" class="flex-grow">
+                            <input type="number" id="appreciation" min="-5" max="15" step="0.1" value="3" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    
+                    <!-- Time Horizon -->
+                    <div>
+                        <label for="timeHorizon" class="block text-sm font-medium text-gray-300">Time Horizon (Years)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="range" id="timeHorizonRange" min="1" max="40" step="1" value="10" class="flex-grow">
+                            <input type="number" id="timeHorizon" min="1" max="40" step="1" value="10" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === OUTPUTS === -->
+            <div class="md:col-span-3">
+                 <h2 class="text-2xl font-bold mb-4 text-teal-400 text-center md:text-left">Results</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <!-- Net Profit -->
+                    <div class="output-card col-span-2 lg:col-span-3 text-center p-6 bg-teal-900/80 border-2 border-teal-500">
+                        <span class="text-lg font-medium text-teal-200">Net Profit</span>
+                        <span id="outputNetProfit" class="text-4xl md:text-5xl font-bold text-white">-</span>
+                    </div>
+
+                    <!-- Return on Equity -->
+                     <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Return on Equity</span>
+                        <span id="outputROE" class="text-2xl font-bold text-teal-300">-</span>
+                    </div>
+
+                    <!-- Required Stock Return -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Eq. Stock Market Return</span>
+                        <span id="outputStockReturn" class="text-2xl font-bold text-teal-300">-</span>
+                    </div>
+                    
+                    <!-- Down Payment -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Down Payment</span>
+                        <span id="outputDownPayment" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <!-- Future Value -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Future Property Value</span>
+                        <span id="outputFutureValue" class="text-2xl font-bold">-</span>
+                    </div>
+                    
+                    <!-- Gross Profit -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Gross Profit (Appreciation)</span>
+                        <span id="outputGrossProfit" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <!-- Total Interest Paid -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Total Interest Paid</span>
+                        <span id="outputTotalInterest" class="text-2xl font-bold">-</span>
+                    </div>
+                    
+                    <!-- Loan Amount -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Loan Amount</span>
+                        <span id="outputLoanAmount" class="text-2xl font-bold">-</span>
+                    </div>
+                    
+                    <!-- Leverage -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Leverage</span>
+                        <span id="outputLeverage" class="text-2xl font-bold">-</span>
+                    </div>
+
+                    <!-- Break Even -->
+                    <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Break-Even Appreciation</span>
+                        <span id="outputBreakEven" class="text-2xl font-bold">-</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700 text-gray-500">
+            <p>Built by Manwhale Labs. For educational and illustrative purposes only. Not financial advice.</p>
+            <p>If you find this tool useful, consider supporting its development!</p>
+             <!-- Buy Me A Coffee Button -->
+            <div class="mt-4">
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="manwhalelabs" data-color="#4fd1c5" data-emoji="☕"  data-font="Inter" data-text="Buy me a coffee" data-outline-color="#ffffff" data-font-color="#000000" data-coffee-color="#FFDD00" ></script>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // === GRAB ALL ELEMENTS ===
+            const inputs = {
+                propertyValue: document.getElementById('propertyValue'),
+                propertyValueRange: document.getElementById('propertyValueRange'),
+                downPayment: document.getElementById('downPayment'),
+                downPaymentRange: document.getElementById('downPaymentRange'),
+                interestRate: document.getElementById('interestRate'),
+                interestRateRange: document.getElementById('interestRateRange'),
+                appreciation: document.getElementById('appreciation'),
+                appreciationRange: document.getElementById('appreciationRange'),
+                timeHorizon: document.getElementById('timeHorizon'),
+                timeHorizonRange: document.getElementById('timeHorizonRange'),
+            };
+
+            const outputs = {
+                downPayment: document.getElementById('outputDownPayment'),
+                loanAmount: document.getElementById('outputLoanAmount'),
+                leverage: document.getElementById('outputLeverage'),
+                totalInterest: document.getElementById('outputTotalInterest'),
+                futureValue: document.getElementById('outputFutureValue'),
+                grossProfit: document.getElementById('outputGrossProfit'),
+                netProfit: document.getElementById('outputNetProfit'),
+                roe: document.getElementById('outputROE'),
+                stockReturn: document.getElementById('outputStockReturn'),
+                breakEven: document.getElementById('outputBreakEven'),
+            };
+
+            // === HELPER FUNCTIONS ===
+            const formatCurrency = (value) => {
+                if (isNaN(value)) return 'CHF -';
+                return 'CHF ' + Math.round(value).toLocaleString('de-CH');
+            };
+
+            const formatPercent = (value, decimals = 2) => {
+                if (isNaN(value) || !isFinite(value)) return '- %';
+                return value.toFixed(decimals) + ' %';
+            };
+
+            const formatMultiplier = (value) => {
+                if (isNaN(value) || !isFinite(value)) return '- x';
+                return value.toFixed(1) + 'x';
+            };
+
+            // === MAIN CALCULATION LOGIC ===
+            function calculateAndDisplay() {
+                // 1. Read values from inputs
+                const propertyValue = parseFloat(inputs.propertyValue.value);
+                const downPaymentPercent = parseFloat(inputs.downPayment.value);
+                const interestRate = parseFloat(inputs.interestRate.value);
+                const appreciation = parseFloat(inputs.appreciation.value);
+                const years = parseInt(inputs.timeHorizon.value);
+
+                // 2. Perform calculations
+                const downPaymentAmount = propertyValue * (downPaymentPercent / 100);
+                const loanAmount = propertyValue - downPaymentAmount;
+                const leverage = downPaymentAmount > 0 ? propertyValue / downPaymentAmount : 0;
+                
+                const totalInterestPaid = loanAmount * (interestRate / 100) * years;
+
+                const futurePropertyValue = propertyValue * Math.pow(1 + (appreciation / 100), years);
+                const grossProfit = futurePropertyValue - propertyValue;
+                const netProfit = grossProfit - totalInterestPaid;
+                
+                const roe = downPaymentAmount > 0 ? (netProfit / downPaymentAmount) * 100 : 0;
+                
+                let stockReturn = NaN;
+                const finalEquity = downPaymentAmount + netProfit;
+                if (downPaymentAmount > 0 && finalEquity > 0) {
+                     stockReturn = (Math.pow(finalEquity / downPaymentAmount, 1 / years) - 1) * 100;
+                }
+
+                const breakEvenAppreciation = loanAmount > 0 ? (Math.pow((totalInterestPaid + propertyValue) / propertyValue, 1 / years) - 1) * 100 : 0;
+
+                // 3. Update the UI
+                outputs.downPayment.textContent = formatCurrency(downPaymentAmount);
+                outputs.loanAmount.textContent = formatCurrency(loanAmount);
+                outputs.leverage.textContent = formatMultiplier(leverage);
+                outputs.totalInterest.textContent = formatCurrency(totalInterestPaid);
+                outputs.futureValue.textContent = formatCurrency(futurePropertyValue);
+                outputs.grossProfit.textContent = formatCurrency(grossProfit);
+                outputs.netProfit.textContent = formatCurrency(netProfit);
+                outputs.roe.textContent = formatPercent(roe, 1);
+                outputs.stockReturn.textContent = formatPercent(stockReturn, 2);
+                outputs.breakEven.textContent = formatPercent(breakEvenAppreciation, 2);
+                
+                // Change color of profit based on value
+                outputs.netProfit.classList.toggle('text-red-400', netProfit < 0);
+                outputs.netProfit.classList.toggle('text-white', netProfit >= 0);
+            }
+
+            // === EVENT LISTENERS (NEW, FIXED VERSION) ===
+            function setupListenersForPair(rangeId, numberId) {
+                const rangeInput = document.getElementById(rangeId);
+                const numberInput = document.getElementById(numberId);
+
+                // Listener for the SLIDER
+                rangeInput.addEventListener('input', () => {
+                    // 1. First, sync the number box to the slider
+                    numberInput.value = rangeInput.value;
+                    // 2. Then, run the calculation
+                    calculateAndDisplay();
+                });
+
+                // Listener for the NUMBER INPUT
+                numberInput.addEventListener('input', () => {
+                    // 1. First, sync the slider to the number box
+                    rangeInput.value = numberInput.value;
+                    // 2. Then, run the calculation
+                    calculateAndDisplay();
+                });
+            }
+
+            // Set up listeners for each pair
+            setupListenersForPair('propertyValueRange', 'propertyValue');
+            setupListenersForPair('downPaymentRange', 'downPayment');
+            setupListenersForPair('interestRateRange', 'interestRate');
+            setupListenersForPair('appreciationRange', 'appreciation');
+            setupListenersForPair('timeHorizonRange', 'timeHorizon');
+
+            // Initial calculation on page load
+            calculateAndDisplay();
+        });
+    </script>
+</body>
+</html>
