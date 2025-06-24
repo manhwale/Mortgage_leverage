@@ -304,18 +304,14 @@
                 const numberInput = document.getElementById(numberId);
                 if (!rangeInput || !numberInput) return;
 
-                const eventHandler = () => {
-                    if (document.activeElement.id === rangeId) {
-                        numberInput.value = rangeInput.value;
-                    } else if (document.activeElement.id === numberId) {
-                        rangeInput.value = numberInput.value;
-                    }
+                // When the slider moves, update the number box and recalculate.
+                rangeInput.addEventListener('input', () => {
+                    numberInput.value = rangeInput.value;
                     calculateAndDisplay();
-                };
+                });
 
-                rangeInput.addEventListener('input', eventHandler);
-                numberInput.addEventListener('input', eventHandler);
-                 numberInput.addEventListener('change', () => { // Syncs when user blurs number input
+                // When the number box value changes, update the slider and recalculate.
+                numberInput.addEventListener('input', () => {
                     rangeInput.value = numberInput.value;
                     calculateAndDisplay();
                 });
