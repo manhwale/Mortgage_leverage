@@ -18,6 +18,15 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+        .feedback-button {
+             background-image: linear-gradient(to right, #4fd1c5 0%, #38b2ac 100%);
+             transition: all 0.3s ease;
+             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .feedback-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(45, 212, 191, 0.2);
+        }
     </style>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -44,6 +53,29 @@
                     <p class="text-gray-400 mt-2 text-sm">A detailed analysis for the Swiss market, including Eigenmietwert, tax deductions, and a rent vs. buy comparison.</p>
                 </a>
 
+            </div>
+
+             <!-- === FEEDBACK FORM === -->
+            <div class="mt-16 p-6 bg-gray-800 rounded-xl shadow-lg max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold text-center mb-4 text-teal-400">Help Shape the Future of Manwhale Labs</h2>
+                <p class="text-center text-gray-400 mb-6">What tool or feature should I build next? Let me know!</p>
+                <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="max-w-xl mx-auto">
+                    <input type="hidden" name="form-name" value="feedback">
+                    <p class="hidden">
+                        <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
+                    </p>
+                    <div class="mb-4">
+                        <label for="feature_request" class="block text-sm font-medium text-gray-300 mb-2">Your idea:</label>
+                        <textarea id="feature_request" name="feature_request" rows="3" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 focus:ring-teal-500 focus:border-teal-500" placeholder="e.g., A Pillar 3a calculator, a tool for stock analysis..." required></textarea>
+                    </div>
+                    <div class="mb-6">
+                        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Your email (optional, for updates):</label>
+                        <input type="email" id="email" name="email" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 focus:ring-teal-500 focus:border-teal-500" placeholder="you@example.com">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="feedback-button text-gray-900 font-bold py-2 px-6 rounded-md">Send Feedback</button>
+                    </div>
+                </form>
             </div>
         </main>
 
