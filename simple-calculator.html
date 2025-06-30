@@ -63,8 +63,8 @@
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
 
         <header class="text-center mb-8 md:mb-12">
-            <h1 class="text-3xl md:text-5xl font-bold text-teal-300">Real Estate Leverage Dashboard</h1>
-            <p class="text-gray-400 mt-3 max-w-2xl mx-auto">An interactive tool to see how leverage, appreciation, and interest rates affect your real estate investment profits over time. Made for the community on Reddit!</p>
+            <h1 class="text-3xl md:text-5xl font-bold text-teal-300">Simple Real Estate Leverage Dashboard</h1>
+            <p class="text-gray-400 mt-3 max-w-2xl mx-auto">An interactive tool to see how leverage, appreciation, and interest rates affect your real estate investment profits over time.</p>
         </header>
 
         <main class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
@@ -78,8 +78,8 @@
                     <div>
                         <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
                         <div class="flex items-center space-x-4 mt-2">
-                            <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="2000000" class="flex-grow">
-                            <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="2000000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                            <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="1500000" class="flex-grow">
+                            <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="1500000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
 
@@ -190,19 +190,14 @@
         </main>
         
         <footer class="text-center mt-12 pt-8 border-t border-gray-700 text-gray-500">
-            <p>Built by Manwhale Labs. For educational and illustrative purposes only. Not financial advice.</p>
-            <p>If you find this tool useful, consider supporting its development!</p>
-             <!-- Buy Me A Coffee Button -->
-            <div class="mt-4">
-                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="manwhalelabs" data-color="#4fd1c5" data-emoji="☕"  data-font="Inter" data-text="Buy me a coffee" data-outline-color="#ffffff" data-font-color="#000000" data-coffee-color="#FFDD00" ></script>
-            </div>
+            <p><a href="/" class="text-teal-400 hover:underline">Back to Manwhale Labs Home</a></p>
+            <p class="mt-4">Built by Manwhale Labs. For educational and illustrative purposes only. Not financial advice.</p>
         </footer>
 
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // === GRAB ALL ELEMENTS ===
             const inputs = {
                 propertyValue: document.getElementById('propertyValue'),
                 propertyValueRange: document.getElementById('propertyValueRange'),
@@ -229,7 +224,6 @@
                 breakEven: document.getElementById('outputBreakEven'),
             };
 
-            // === HELPER FUNCTIONS ===
             const formatCurrency = (value) => {
                 if (isNaN(value)) return 'CHF -';
                 return 'CHF ' + Math.round(value).toLocaleString('de-CH');
@@ -244,27 +238,20 @@
                 if (isNaN(value) || !isFinite(value)) return '- x';
                 return value.toFixed(1) + 'x';
             };
-
-            // === MAIN CALCULATION LOGIC ===
+            
             function calculateAndDisplay() {
-                // 1. Read values from inputs
                 const propertyValue = parseFloat(inputs.propertyValue.value);
-                const downPaymentPercent = parseFloat(inputs.downPayment.value);
-                const interestRate = parseFloat(inputs.interestRate.value);
-                const appreciation = parseFloat(inputs.appreciation.value);
+                const downPaymentPercent = parseFloat(inputs.downPayment.value) / 100;
+                const interestRate = parseFloat(inputs.interestRate.value) / 100;
+                const appreciationRate = parseFloat(inputs.appreciation.value) / 100;
                 const years = parseInt(inputs.timeHorizon.value);
 
-                // 2. Perform calculations
-                const downPaymentAmount = propertyValue * (downPaymentPercent / 100);
+                const downPaymentAmount = propertyValue * downPaymentPercent;
                 const loanAmount = propertyValue - downPaymentAmount;
-                const leverage = downPaymentAmount > 0 ? propertyValue / downPaymentAmount : 0;
-                
-                const totalInterestPaid = loanAmount * (interestRate / 100) * years;
-
-                const futurePropertyValue = propertyValue * Math.pow(1 + (appreciation / 100), years);
+                const totalInterestPaid = loanAmount * interestRate * years;
+                const futurePropertyValue = propertyValue * Math.pow(1 + appreciationRate, years);
                 const grossProfit = futurePropertyValue - propertyValue;
                 const netProfit = grossProfit - totalInterestPaid;
-                
                 const roe = downPaymentAmount > 0 ? (netProfit / downPaymentAmount) * 100 : 0;
                 
                 let stockReturn = NaN;
@@ -273,9 +260,9 @@
                      stockReturn = (Math.pow(finalEquity / downPaymentAmount, 1 / years) - 1) * 100;
                 }
 
-                const breakEvenAppreciation = loanAmount > 0 ? (Math.pow((totalInterestPaid + propertyValue) / propertyValue, 1 / years) - 1) * 100 : 0;
+                const breakEvenAppreciation = loanAmount > 0 ? (Math.pow((totalInterestPaid + propertyValue) / propertyValue, 1 / years) - 1) * 100 : NaN;
+                const leverage = downPaymentAmount > 0 ? propertyValue / downPaymentAmount : NaN;
 
-                // 3. Update the UI
                 outputs.downPayment.textContent = formatCurrency(downPaymentAmount);
                 outputs.loanAmount.textContent = formatCurrency(loanAmount);
                 outputs.leverage.textContent = formatMultiplier(leverage);
@@ -287,41 +274,29 @@
                 outputs.stockReturn.textContent = formatPercent(stockReturn, 2);
                 outputs.breakEven.textContent = formatPercent(breakEvenAppreciation, 2);
                 
-                // Change color of profit based on value
                 outputs.netProfit.classList.toggle('text-red-400', netProfit < 0);
                 outputs.netProfit.classList.toggle('text-white', netProfit >= 0);
             }
 
-            // === EVENT LISTENERS (NEW, FIXED VERSION) ===
             function setupListenersForPair(rangeId, numberId) {
                 const rangeInput = document.getElementById(rangeId);
                 const numberInput = document.getElementById(numberId);
-
-                // Listener for the SLIDER
                 rangeInput.addEventListener('input', () => {
-                    // 1. First, sync the number box to the slider
                     numberInput.value = rangeInput.value;
-                    // 2. Then, run the calculation
                     calculateAndDisplay();
                 });
-
-                // Listener for the NUMBER INPUT
                 numberInput.addEventListener('input', () => {
-                    // 1. First, sync the slider to the number box
                     rangeInput.value = numberInput.value;
-                    // 2. Then, run the calculation
                     calculateAndDisplay();
                 });
             }
 
-            // Set up listeners for each pair
             setupListenersForPair('propertyValueRange', 'propertyValue');
             setupListenersForPair('downPaymentRange', 'downPayment');
             setupListenersForPair('interestRateRange', 'interestRate');
             setupListenersForPair('appreciationRange', 'appreciation');
             setupListenersForPair('timeHorizonRange', 'timeHorizon');
-
-            // Initial calculation on page load
+            
             calculateAndDisplay();
         });
     </script>
