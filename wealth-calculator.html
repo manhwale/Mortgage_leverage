@@ -11,18 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #4a5568; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
+        input[type="range"]:hover { opacity: 1; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #63b3ed; cursor: pointer; border-radius: 50%; border: 2px solid #1a202c; }
+        input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: #63b3ed; cursor: pointer; border-radius: 50%; border: 2px solid #1a202c; }
         .output-card { background-color: #2d3748; border-radius: 0.75rem; padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
         .hero-output-green { background-color: #2f855a; border-color: #68d391; }
         .hero-output-purple { background-color: #553c9a; border-color: #9f7aea; }
-        .feedback-button {
-             background-image: linear-gradient(to right, #63b3ed 0%, #4299e1 100%);
-             transition: all 0.3s ease;
-             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .feedback-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.2);
-        }
     </style>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -39,67 +34,80 @@
 
             <!-- === INPUTS === -->
             <div class="md:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Shared Parameters</h2>
-                <div class="space-y-4">
+                <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Input Parameters</h2>
+                <div class="space-y-6">
                     <!-- Property Value -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
-                        <input type="number" id="propertyValue" value="1500000" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 mt-1">
+                        <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="1500000" class="flex-grow">
+                           <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="1500000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
                     </div>
                      <!-- Down Payment -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Down Payment (%)</label>
-                        <input type="number" id="downPayment" value="20" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 mt-1">
+                        <label for="downPayment" class="block text-sm font-medium text-gray-300">Down Payment (%)</label>
+                         <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="downPaymentRange" min="20" max="100" step="1" value="20" class="flex-grow">
+                           <input type="number" id="downPayment" min="20" max="100" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
                     </div>
                      <!-- Time Horizon -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Time Horizon (Years)</label>
-                        <input type="number" id="timeHorizon" value="20" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 mt-1">
+                        <label for="timeHorizon" class="block text-sm font-medium text-gray-300">Time Horizon (Years)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="timeHorizonRange" min="1" max="40" step="1" value="20" class="flex-grow">
+                           <input type="number" id="timeHorizon" min="1" max="40" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
                     </div>
                      <!-- Marginal Tax Rate -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-300">Marginal Tax Rate (%)</label>
-                        <input type="number" id="taxRate" value="30" class="w-full bg-gray-700 text-white rounded-md border-gray-600 p-2 mt-1">
-                    </div>
-                </div>
-
-                <h2 class="text-2xl font-bold mt-8 mb-6 text-teal-400 border-b border-gray-700 pb-2">Scenario-Specific Inputs</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <!-- Homeowner Inputs -->
-                    <div class="bg-gray-700 p-4 rounded-lg">
-                        <h3 class="font-bold text-lg text-green-400 mb-2">Homeowner Path</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-300">Mortgage Rate (%)</label>
-                                <input type="number" id="interestRate" value="2.0" class="w-full bg-gray-600 text-white rounded-md p-1 mt-1 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-300">Property Appreciation (%)</label>
-                                <input type="number" id="appreciation" value="3.0" class="w-full bg-gray-600 text-white rounded-md p-1 mt-1 text-sm">
-                            </div>
-                             <div>
-                                <label class="block text-xs font-medium text-gray-300">Actual Maintenance (% of Value)</label>
-                                <input type="number" id="actualMaintenanceRate" value="1.0" class="w-full bg-gray-600 text-white rounded-md p-1 mt-1 text-sm">
-                            </div>
+                        <label for="taxRate" class="block text-sm font-medium text-gray-300">Marginal Tax Rate (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="taxRateRange" min="10" max="50" step="1" value="30" class="flex-grow">
+                           <input type="number" id="taxRate" min="10" max="50" step="1" value="30" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
-                    <!-- Renter Inputs -->
-                    <div class="bg-gray-700 p-4 rounded-lg">
-                        <h3 class="font-bold text-lg text-purple-400 mb-2">Renter Path</h3>
-                         <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-300">Monthly Rent (CHF)</label>
-                                <input type="number" id="monthlyRent" value="3500" class="w-full bg-gray-600 text-white rounded-md p-1 mt-1 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-300">Stock Market Return (%)</label>
-                                <input type="number" id="stockReturn" value="7.0" class="w-full bg-gray-600 text-white rounded-md p-1 mt-1 text-sm">
-                            </div>
+                    <!-- Mortgage Rate -->
+                    <div>
+                        <label for="interestRate" class="block text-sm font-medium text-gray-300">Mortgage Rate (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="interestRateRange" min="0.5" max="10" step="0.1" value="2.0" class="flex-grow">
+                           <input type="number" id="interestRate" min="0.5" max="10" step="0.1" value="2.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
-                </div>
-                 <div class="mt-6 text-center">
-                    <button id="calculateBtn" class="w-full feedback-button text-gray-900 font-bold py-3 px-6 rounded-md text-lg">Calculate Net Worth</button>
+                    <!-- Property Appreciation -->
+                     <div>
+                        <label for="appreciation" class="block text-sm font-medium text-gray-300">Property Appreciation (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="appreciationRange" min="-5" max="15" step="0.1" value="3.0" class="flex-grow">
+                           <input type="number" id="appreciation" min="-5" max="15" step="0.1" value="3.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    <!-- Actual Maintenance -->
+                    <div>
+                        <label for="actualMaintenanceRate" class="block text-sm font-medium text-gray-300">Actual Maintenance (% of Value)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="actualMaintenanceRateRange" min="0.1" max="3" step="0.1" value="1.0" class="flex-grow">
+                           <input type="number" id="actualMaintenanceRate" min="0.1" max="3" step="0.1" value="1.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    <!-- Monthly Rent -->
+                    <div>
+                        <label for="monthlyRent" class="block text-sm font-medium text-gray-300">Monthly Rent (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="monthlyRentRange" min="1000" max="10000" step="100" value="3500" class="flex-grow">
+                           <input type="number" id="monthlyRent" min="1000" max="10000" step="100" value="3500" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
+                    <!-- Stock Market Return -->
+                    <div>
+                        <label for="stockReturn" class="block text-sm font-medium text-gray-300">Stock Market Return (%)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="stockReturnRange" min="0" max="15" step="0.1" value="7.0" class="flex-grow">
+                           <input type="number" id="stockReturn" min="0" max="15" step="0.1" value="7.0" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -147,8 +155,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const calculateBtn = document.getElementById('calculateBtn');
-
             const formatCurrency = (value) => {
                 const roundedValue = Math.round(value);
                 const sign = roundedValue < 0 ? '-' : '';
@@ -162,12 +168,10 @@
                 const years = parseInt(document.getElementById('timeHorizon').value);
                 const taxRate = parseFloat(document.getElementById('taxRate').value) / 100;
                 
-                // Homeowner inputs
                 const intRate = parseFloat(document.getElementById('interestRate').value) / 100;
                 const apprRate = parseFloat(document.getElementById('appreciation').value) / 100;
                 const actualMaintRate = parseFloat(document.getElementById('actualMaintenanceRate').value) / 100;
                 
-                // Renter inputs
                 const rent = parseFloat(document.getElementById('monthlyRent').value);
                 const stockRate = parseFloat(document.getElementById('stockReturn').value) / 100;
 
@@ -228,7 +232,34 @@
                 document.getElementById('outputTaxImpact').classList.toggle('text-green-400', annualTaxImpact <= 0);
             }
 
-            calculateBtn.addEventListener('click', calculateWealth);
+            function setupListenersForPair(rangeId, numberId) {
+                const rangeInput = document.getElementById(rangeId);
+                const numberInput = document.getElementById(numberId);
+                if (!rangeInput || !numberInput) return;
+
+                rangeInput.addEventListener('input', () => {
+                    numberInput.value = rangeInput.value;
+                    calculateWealth();
+                });
+
+                numberInput.addEventListener('input', () => {
+                    rangeInput.value = rangeInput.value;
+                    calculateWealth();
+                });
+            }
+
+            const inputPairs = [
+                ['propertyValueRange', 'propertyValue'],
+                ['downPaymentRange', 'downPayment'],
+                ['timeHorizonRange', 'timeHorizon'],
+                ['taxRateRange', 'taxRate'],
+                ['interestRateRange', 'interestRate'],
+                ['appreciationRange', 'appreciation'],
+                ['actualMaintenanceRateRange', 'actualMaintenanceRate'],
+                ['monthlyRentRange', 'monthlyRent'],
+                ['stockReturnRange', 'stockReturn']
+            ];
+            inputPairs.forEach(pair => setupListenersForPair(pair[0], pair[1]));
             
             // Initial calculation on page load
             calculateWealth();
