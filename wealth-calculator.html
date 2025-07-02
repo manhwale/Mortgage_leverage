@@ -18,8 +18,17 @@
         .output-card { background-color: #2d3748; border-radius: 0.75rem; padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
         .hero-output-green { background-color: #2f855a; border-color: #68d391; }
         .hero-output-purple { background-color: #553c9a; border-color: #9f7aea; }
+        .feedback-button {
+             background-image: linear-gradient(to right, #63b3ed 0%, #4299e1 100%);
+             transition: all 0.3s ease;
+             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .feedback-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.2);
+        }
     </style>
-    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
+        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body class="bg-gray-900 text-white antialiased">
 
@@ -195,13 +204,13 @@
                 
                 const trueAnnualCostOfOwning = cashOutflows + annualTaxImpact;
 
-                // 2. Homeowner's Final Net Worth
-                const futurePropertyValue = pValue * Math.pow(1 + apprRate, years);
-                const ownerNetWorth = futurePropertyValue - loanAmount;
+                // 2. Renter's Final Net Worth
+                const renterNetWorth = downPayment * Math.pow(1 + stockRate, years);
 
-                // 3. Renter's Final Net Worth
-                const fvOfDownPayment = downPayment * Math.pow(1 + stockRate, years);
-                
+                // 3. Homeowner's Final Net Worth
+                const futurePropertyValue = pValue * Math.pow(1 + apprRate, years);
+                const propertyEquity = futurePropertyValue - loanAmount;
+
                 const annualRentCost = rent * 12;
                 const annualDelta = annualRentCost - trueAnnualCostOfOwning;
 
@@ -210,7 +219,7 @@
                     fvOfAnnualInvestments = annualDelta * ((Math.pow(1 + stockRate, years) - 1) / stockRate);
                 }
                 
-                const renterNetWorth = fvOfDownPayment + fvOfAnnualInvestments;
+                const ownerNetWorth = propertyEquity + fvOfAnnualInvestments;
                 
                 // 4. Advantage Calculation
                 const advantage = ownerNetWorth - renterNetWorth;
