@@ -18,17 +18,8 @@
         .output-card { background-color: #2d3748; border-radius: 0.75rem; padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
         .hero-output-green { background-color: #2f855a; border-color: #68d391; }
         .hero-output-purple { background-color: #553c9a; border-color: #9f7aea; }
-        .feedback-button {
-             background-image: linear-gradient(to right, #63b3ed 0%, #4299e1 100%);
-             transition: all 0.3s ease;
-             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .feedback-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.2);
-        }
     </style>
-        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body class="bg-gray-900 text-white antialiased">
 
@@ -45,6 +36,14 @@
             <div class="md:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg">
                 <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Input Parameters</h2>
                 <div class="space-y-6">
+                    <!-- Base Monthly Savings -->
+                    <div>
+                        <label for="baseSavings" class="block text-sm font-medium text-gray-300">Base Monthly Savings (CHF)</label>
+                        <div class="flex items-center space-x-4 mt-2">
+                           <input type="range" id="baseSavingsRange" min="0" max="5000" step="100" value="1000" class="flex-grow">
+                           <input type="number" id="baseSavings" min="0" max="5000" step="100" value="1000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                        </div>
+                    </div>
                     <!-- Property Value -->
                     <div>
                         <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
@@ -141,16 +140,12 @@
                 <h2 class="text-2xl font-bold mb-4 text-center md:text-left">Key Annual Metrics</h2>
                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Annual Savings vs. Renting</span>
-                        <span id="outputAnnualSavings" class="text-2xl font-bold">-</span>
+                        <span class="text-sm font-medium text-gray-400">Owner's Annual Investment</span>
+                        <span id="outputOwnerInvestment" class="text-2xl font-bold">-</span>
                     </div>
-                    <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">True Annual Cost of Owning</span>
-                        <span id="outputTrueCost" class="text-2xl font-bold">-</span>
-                    </div>
-                    <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Annual Tax Impact</span>
-                        <span id="outputTaxImpact" class="text-2xl font-bold">-</span>
+                     <div class="output-card text-center p-4">
+                        <span class="text-sm font-medium text-gray-400">Renter's Annual Investment</span>
+                        <span id="outputRenterInvestment" class="text-2xl font-bold">-</span>
                     </div>
                  </div>
             </div>
@@ -172,6 +167,7 @@
 
             function calculateWealth() {
                 // --- Read all inputs ---
+                const baseSavings = parseFloat(document.getElementById('baseSavings').value);
                 const pValue = parseFloat(document.getElementById('propertyValue').value);
                 const dpPercent = parseFloat(document.getElementById('downPayment').value) / 100;
                 const years = parseInt(document.getElementById('timeHorizon').value);
@@ -191,6 +187,7 @@
                 // --- Calculations ---
                 const downPayment = pValue * dpPercent;
                 const loanAmount = pValue - downPayment;
+                const annualBaseSavings = baseSavings * 12;
 
                 // 1. Calculate True Annual Cost of Owning
                 const annualInterest = loanAmount * intRate;
@@ -203,25 +200,32 @@
                 const annualTaxImpact = netChangeToTaxableIncome * taxRate;
                 
                 const trueAnnualCostOfOwning = cashOutflows + annualTaxImpact;
-
-                // 2. Renter's Final Net Worth
-                const renterNetWorth = downPayment * Math.pow(1 + stockRate, years);
-
-                // 3. Homeowner's Final Net Worth
-                const futurePropertyValue = pValue * Math.pow(1 + apprRate, years);
-                const propertyEquity = futurePropertyValue - loanAmount;
-
                 const annualRentCost = rent * 12;
                 const annualDelta = annualRentCost - trueAnnualCostOfOwning;
 
-                let fvOfAnnualInvestments = 0;
-                if (annualDelta > 0) {
-                    fvOfAnnualInvestments = annualDelta * ((Math.pow(1 + stockRate, years) - 1) / stockRate);
+                // 2. Calculate each person's annual investment amount
+                let ownerAnnualInvestment = annualBaseSavings;
+                let renterAnnualInvestment = annualBaseSavings;
+
+                if (annualDelta > 0) { // Owning is cheaper
+                    ownerAnnualInvestment += annualDelta;
+                } else { // Renting is cheaper
+                    renterAnnualInvestment += Math.abs(annualDelta);
                 }
+
+                // 3. Calculate future value of investments for each person
+                const fvOfOwnerInvestments = ownerAnnualInvestment > 0 ? ownerAnnualInvestment * ((Math.pow(1 + stockRate, years) - 1) / stockRate) : 0;
+                const fvOfRenterInvestments = renterAnnualInvestment > 0 ? renterAnnualInvestment * ((Math.pow(1 + stockRate, years) - 1) / stockRate) : 0;
                 
-                const ownerNetWorth = propertyEquity + fvOfAnnualInvestments;
+                // 4. Calculate Final Net Worth
+                const futurePropertyValue = pValue * Math.pow(1 + apprRate, years);
+                const propertyEquity = futurePropertyValue - loanAmount;
+                const ownerNetWorth = propertyEquity + fvOfOwnerInvestments;
+
+                const fvOfDownPayment = downPayment * Math.pow(1 + stockRate, years);
+                const renterNetWorth = fvOfDownPayment + fvOfRenterInvestments;
                 
-                // 4. Advantage Calculation
+                // 5. Advantage Calculation
                 const advantage = ownerNetWorth - renterNetWorth;
                 const advantageText = advantage > 0 
                     ? `Owning by ${formatCurrency(advantage)}` 
@@ -234,11 +238,8 @@
                 document.getElementById('outputNetWorthAdvantage').classList.toggle('text-green-400', advantage > 0);
                 document.getElementById('outputNetWorthAdvantage').classList.toggle('text-purple-400', advantage <= 0);
 
-                document.getElementById('outputAnnualSavings').textContent = formatCurrency(annualDelta);
-                document.getElementById('outputTrueCost').textContent = formatCurrency(trueAnnualCostOfOwning);
-                document.getElementById('outputTaxImpact').textContent = formatCurrency(annualTaxImpact);
-                document.getElementById('outputTaxImpact').classList.toggle('text-red-400', annualTaxImpact > 0);
-                document.getElementById('outputTaxImpact').classList.toggle('text-green-400', annualTaxImpact <= 0);
+                document.getElementById('outputOwnerInvestment').textContent = formatCurrency(ownerAnnualInvestment);
+                document.getElementById('outputRenterInvestment').textContent = formatCurrency(renterAnnualInvestment);
             }
 
             function setupListenersForPair(rangeId, numberId) {
@@ -252,12 +253,13 @@
                 });
 
                 numberInput.addEventListener('input', () => {
-                    rangeInput.value = rangeInput.value;
+                    rangeInput.value = numberInput.value;
                     calculateWealth();
                 });
             }
 
             const inputPairs = [
+                ['baseSavingsRange', 'baseSavings'],
                 ['propertyValueRange', 'propertyValue'],
                 ['downPaymentRange', 'downPayment'],
                 ['timeHorizonRange', 'timeHorizon'],
