@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Swiss Real Estate Calculator | Manwhale Labs</title>
     <meta name="description" content="An advanced financial calculator for the Swiss real estate market, including imputed rental value (Eigenmietwert), tax deductions, and a savings vs. renting comparison.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%234fd1c5%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M2 14C2 14 3 12 5 12C7 12 8 14 8 14C8 14 9 12 11 12C13 12 14 14 14 14C14 14 15 12 17 12C19 12 20 14 20 14V20H4L2 14Z%22></path><path d=%22M16 8L18 10%22></path><path d=%22M6 8L8 10%22></path></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +46,27 @@
             background-color: #234e52; /* teal-900 */
             border-color: #4fd1c5; /* teal-400 */
         }
+        /* Tooltip Styles */
+        .tooltip-container {
+            position: relative;
+            cursor: help;
+        }
+        #tooltip {
+            position: absolute;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4a5568;
+            font-size: 0.875rem;
+            max-width: 250px;
+            z-index: 10;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            transform: translate(-50%, -110%); /* Position above the cursor */
+        }
     </style>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -62,7 +84,6 @@
             <!-- === INPUTS === -->
             <div class="md:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg">
                 <h2 class="text-2xl font-bold mb-6 text-teal-400 border-b border-gray-700 pb-2">Investment & Sale Parameters</h2>
-
                 <div class="space-y-6">
                     <!-- Property Value -->
                     <div>
@@ -141,22 +162,22 @@
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     
                     <div class="output-card hero-output-blue col-span-2 lg:col-span-3 text-center p-6 border-2">
-                        <span class="text-lg font-medium text-blue-200">Net Annual Savings vs. Renting</span>
+                        <span class="text-lg font-medium text-blue-200 tooltip-container" data-tooltip="Compares the true annual cost of owning (including mortgage, maintenance, and tax impact) to the cost of renting a similar property. A positive value means owning is cheaper per year.">Net Annual Savings vs. Renting</span>
                         <span id="outputAnnualSavings" class="text-4xl md:text-5xl font-bold text-white">-</span>
                     </div>
 
                      <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">True Annual Cost of Owning</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The actual 'out-of-pocket' cost per year. Calculated as: (Annual Mortgage Interest) + (Actual Maintenance Cost) + (Annual Tax Impact).">True Annual Cost of Owning</span>
                         <span id="outputTrueCost" class="text-2xl font-bold">-</span>
                     </div>
 
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Equivalent Annual Rent</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The total rent you would pay for a comparable property over one year.">Equivalent Annual Rent</span>
                         <span id="outputAnnualRent" class="text-2xl font-bold">-</span>
                     </div>
                     
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Annual Tax Impact</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The yearly change in your tax bill due to owning the property. A positive value is an extra tax cost (Eigenmietwert is higher than deductions). A negative value (green) is a tax saving.">Annual Tax Impact</span>
                         <span id="outputTaxImpact" class="text-2xl font-bold">-</span>
                     </div>
                 </div>
@@ -164,27 +185,27 @@
                 <h2 class="text-2xl font-bold mb-4 text-teal-300 text-center md:text-left">Analysis After Sale</h2>
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="output-card hero-output-teal col-span-2 lg:col-span-3 text-center p-6 border-2">
-                        <span class="text-lg font-medium text-teal-200">Final Net Profit (After Tax)</span>
+                        <span class="text-lg font-medium text-teal-200 tooltip-container" data-tooltip="The total profit from the property's appreciation MINUS all ownership costs (interest, maintenance, and tax impact) over the entire time horizon.">Final Net Profit (After Tax)</span>
                         <span id="outputFinalProfit" class="text-4xl md:text-5xl font-bold text-white">-</span>
                     </div>
                     
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Return on Equity (ROE)</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The total net profit expressed as a percentage of your initial down payment. A key measure of investment performance.">Return on Equity (ROE)</span>
                         <span id="outputROE" class="text-2xl font-bold">-</span>
                     </div>
 
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Eq. Stock Market Return</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The consistent annual return (%) required from the stock market to achieve the same final net profit with the same initial investment (down payment).">Eq. Stock Market Return</span>
                         <span id="outputStockReturn" class="text-2xl font-bold">-</span>
                     </div>
 
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Gross Profit (Appreciation)</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The total increase in the property's value over the entire time horizon.">Gross Profit (Appreciation)</span>
                         <span id="outputGrossProfit" class="text-2xl font-bold">-</span>
                     </div>
 
                     <div class="output-card text-center p-4">
-                        <span class="text-sm font-medium text-gray-400">Total Ownership Costs</span>
+                        <span class="text-sm font-medium text-gray-400 tooltip-container" data-tooltip="The sum of all costs over the entire time horizon: (Total Interest) + (Total Maintenance) + (Total Tax Impact).">Total Ownership Costs</span>
                         <span id="outputTotalCosts" class="text-2xl font-bold">-</span>
                     </div>
                 </div>
@@ -195,8 +216,13 @@
             <p><a href="/" class="text-teal-400 hover:underline">Back to Manwhale Labs Home</a></p>
             <p class="mt-4">Built by Manwhale Labs. For educational and illustrative purposes only. Not financial advice.</p>
         </footer>
-
     </div>
+    
+    <!-- Tooltip Element -->
+    <div id="tooltip"></div>
+    
+    <!-- Buy Me A Coffee Widget -->
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="manwhalelabs" data-description="Support me on Buy me a coffee!" data-message="Thank you for visiting! Your support helps keep these tools free." data-color="#4fd1c5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -305,13 +331,11 @@
                 const numberInput = document.getElementById(numberId);
                 if (!rangeInput || !numberInput) return;
 
-                // When the slider moves, update the number box and recalculate.
                 rangeInput.addEventListener('input', () => {
-                    numberInput.value = rangeInput.value;
+                    numberInput.value = numberInput.value;
                     calculateAndDisplay();
                 });
 
-                // When the number box value changes, update the slider and recalculate.
                 numberInput.addEventListener('input', () => {
                     rangeInput.value = numberInput.value;
                     calculateAndDisplay();
@@ -329,6 +353,28 @@
                 ['actualMaintenanceRateRange', 'actualMaintenanceRate']
             ];
             inputPairs.forEach(pair => setupListenersForPair(pair[0], pair[1]));
+            
+            const tooltipEl = document.getElementById('tooltip');
+            const tooltipContainers = document.querySelectorAll('.tooltip-container');
+
+            tooltipContainers.forEach(container => {
+                container.addEventListener('mousemove', (e) => {
+                    tooltipEl.style.left = `${e.pageX}px`;
+                    tooltipEl.style.top = `${e.pageY}px`;
+                });
+
+                container.addEventListener('mouseenter', (e) => {
+                    const tooltipText = e.target.getAttribute('data-tooltip');
+                    tooltipEl.textContent = tooltipText;
+                    tooltipEl.style.visibility = 'visible';
+                    tooltipEl.style.opacity = 1;
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    tooltipEl.style.visibility = 'hidden';
+                    tooltipEl.style.opacity = 0;
+                });
+            });
 
             calculateAndDisplay();
         });

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wealth-Building Simulator: Rent vs. Buy | Manwhale Labs</title>
     <meta name="description" content="A wealth-building simulator to compare the final net worth of buying a home versus renting and investing the difference in the stock market.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%234fd1c5%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M2 14C2 14 3 12 5 12C7 12 8 14 8 14C8 14 9 12 11 12C13 12 14 14 14 14C14 14 15 12 17 12C19 12 20 14 20 14V20H4L2 14Z%22></path><path d=%22M16 8L18 10%22></path><path d=%22M6 8L8 10%22></path></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +19,6 @@
         .output-card { background-color: #2d3748; border-radius: 0.75rem; padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
         .hero-output-green { background-color: #2f855a; border-color: #68d391; }
         .hero-output-purple { background-color: #553c9a; border-color: #9f7aea; }
-        .tooltip-container { position: relative; cursor: help; }
-        #tooltip { position: absolute; background-color: #1a202c; color: #e2e8f0; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #4a5568; font-size: 0.875rem; max-width: 250px; z-index: 10; visibility: hidden; opacity: 0; transition: opacity 0.2s; pointer-events: none; transform: translate(-50%, -110%); }
     </style>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1635e116444b4c22bdd3a8f16cbd01a6"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -30,7 +29,6 @@
         <header class="text-center mb-8 md:mb-12">
             <h1 class="text-3xl md:text-5xl font-bold text-teal-300">Wealth-Building Simulator</h1>
             <p class="text-gray-400 mt-3 max-w-3xl mx-auto">Compare the final net worth of buying a home vs. renting and investing the difference.</p>
-            <p class="text-xs text-gray-500 mt-2">Key inputs for the Swiss model include: Maintenance, Marginal Tax Rate, and Base Monthly Savings.</p>
         </header>
 
         <main class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
@@ -143,23 +141,11 @@
                 <h2 class="text-2xl font-bold mb-4 text-center md:text-left">Key Annual Metrics</h2>
                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="output-card text-center p-3">
-                        <span class="text-xs font-medium text-gray-400 tooltip-container" data-tooltip="The cash flow difference between owning and renting. A positive value means owning is cheaper, and this amount is added to the owner's annual investment.">Annual Savings vs. Renting</span>
-                        <span id="outputAnnualSavings" class="text-xl font-bold">-</span>
-                    </div>
-                    <div class="output-card text-center p-3">
-                        <span class="text-xs font-medium text-gray-400 tooltip-container" data-tooltip="The total 'out-of-pocket' cost per year for the owner, including mortgage, maintenance, and the final tax impact.">True Annual Cost of Owning</span>
-                        <span id="outputTrueCost" class="text-xl font-bold">-</span>
-                    </div>
-                    <div class="output-card text-center p-3">
-                        <span class="text-xs font-medium text-gray-400 tooltip-container" data-tooltip="The yearly change in your tax bill. A negative value (green) is a tax saving; a positive value (red) is an extra tax cost.">Annual Tax Impact</span>
-                        <span id="outputTaxImpact" class="text-xl font-bold">-</span>
-                    </div>
-                     <div class="output-card text-center p-3">
-                        <span class="text-xs font-medium text-gray-400 tooltip-container" data-tooltip="The base savings plus or minus the housing cost difference, showing the total amount invested each year by the owner.">Owner's Annual Investment</span>
+                        <span class="text-xs font-medium text-gray-400">Owner's Annual Investment</span>
                         <span id="outputOwnerInvestment" class="text-xl font-bold">-</span>
                     </div>
                      <div class="output-card text-center p-3">
-                        <span class="text-xs font-medium text-gray-400 tooltip-container" data-tooltip="The base savings plus or minus the housing cost difference, showing the total amount invested each year by the renter.">Renter's Annual Investment</span>
+                        <span class="text-xs font-medium text-gray-400">Renter's Annual Investment</span>
                         <span id="outputRenterInvestment" class="text-xl font-bold">-</span>
                     </div>
                  </div>
@@ -172,8 +158,8 @@
         </footer>
     </div>
     
-    <!-- Tooltip Element -->
-    <div id="tooltip"></div>
+    <!-- Buy Me A Coffee Widget -->
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="manwhalelabs" data-description="Support me on Buy me a coffee!" data-message="Thank you for visiting! Your support helps keep these tools free." data-color="#4fd1c5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -256,12 +242,6 @@
                 document.getElementById('outputNetWorthAdvantage').classList.toggle('text-green-400', advantage > 0);
                 document.getElementById('outputNetWorthAdvantage').classList.toggle('text-purple-400', advantage <= 0);
 
-                document.getElementById('outputAnnualSavings').textContent = formatCurrency(annualDelta);
-                document.getElementById('outputTrueCost').textContent = formatCurrency(trueAnnualCostOfOwning);
-                document.getElementById('outputTaxImpact').textContent = formatCurrency(annualTaxImpact);
-                document.getElementById('outputTaxImpact').classList.toggle('text-red-400', annualTaxImpact > 0);
-                document.getElementById('outputTaxImpact').classList.toggle('text-green-400', annualTaxImpact <= 0);
-                
                 document.getElementById('outputOwnerInvestment').textContent = formatCurrency(ownerAnnualInvestment);
                 document.getElementById('outputRenterInvestment').textContent = formatCurrency(renterAnnualInvestment);
             }
@@ -296,28 +276,6 @@
             ];
             inputPairs.forEach(pair => setupListenersForPair(pair[0], pair[1]));
             
-            const tooltipEl = document.getElementById('tooltip');
-            const tooltipContainers = document.querySelectorAll('.tooltip-container');
-
-            tooltipContainers.forEach(container => {
-                container.addEventListener('mousemove', (e) => {
-                    tooltipEl.style.left = `${e.pageX}px`;
-                    tooltipEl.style.top = `${e.pageY}px`;
-                });
-
-                container.addEventListener('mouseenter', (e) => {
-                    const tooltipText = e.target.getAttribute('data-tooltip');
-                    tooltipEl.textContent = tooltipText;
-                    tooltipEl.style.visibility = 'visible';
-                    tooltipEl.style.opacity = 1;
-                });
-
-                container.addEventListener('mouseleave', () => {
-                    tooltipEl.style.visibility = 'hidden';
-                    tooltipEl.style.opacity = 0;
-                });
-            });
-
             // Initial calculation on page load
             calculateWealth();
         });
