@@ -90,15 +90,15 @@
                         <label for="propertyValue" class="block text-sm font-medium text-gray-300">Property Value (CHF)</label>
                         <div class="flex items-center space-x-4 mt-2">
                             <input type="range" id="propertyValueRange" min="100000" max="5000000" step="50000" value="1500000" class="flex-grow">
-                            <input type="number" id="propertyValue" min="100000" max="5000000" step="50000" value="1500000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                            <input type="number" id="propertyValue" value="1500000" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
                      <!-- Down Payment -->
                     <div>
                         <label for="downPayment" class="block text-sm font-medium text-gray-300">Down Payment (%)</label>
                         <div class="flex items-center space-x-4 mt-2">
-                            <input type="range" id="downPaymentRange" min="20" max="100" step="1" value="20" class="flex-grow">
-                            <input type="number" id="downPayment" min="20" max="100" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                            <input type="range" id="downPaymentRange" min="0" max="100" step="1" value="20" class="flex-grow">
+                            <input type="number" id="downPayment" min="0" max="100" step="1" value="20" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
                      <!-- Mortgage Interest Rate -->
@@ -114,7 +114,7 @@
                         <label for="timeHorizon" class="block text-sm font-medium text-gray-300">Time Horizon (Years)</label>
                         <div class="flex items-center space-x-4 mt-2">
                             <input type="range" id="timeHorizonRange" min="1" max="40" step="1" value="10" class="flex-grow">
-                            <input type="number" id="timeHorizon" min="1" max="40" step="1" value="10" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                            <input type="number" id="timeHorizon" value="10" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
                     <!-- Annual Property Appreciation -->
@@ -134,7 +134,7 @@
                         <label for="monthlyRent" class="block text-sm font-medium text-gray-300">Comparable Monthly Rent (CHF)</label>
                         <div class="flex items-center space-x-4 mt-2">
                             <input type="range" id="monthlyRentRange" min="1000" max="10000" step="100" value="3500" class="flex-grow">
-                            <input type="number" id="monthlyRent" min="1000" max="10000" step="100" value="3500" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
+                            <input type="number" id="monthlyRent" value="3500" class="w-32 bg-gray-700 text-white rounded-md border-gray-600 p-2 text-center">
                         </div>
                     </div>
                      <!-- Marginal Tax Rate -->
@@ -226,37 +226,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const inputs = {
-                propertyValue: document.getElementById('propertyValue'),
-                propertyValueRange: document.getElementById('propertyValueRange'),
-                downPayment: document.getElementById('downPayment'),
-                downPaymentRange: document.getElementById('downPaymentRange'),
-                interestRate: document.getElementById('interestRate'),
-                interestRateRange: document.getElementById('interestRateRange'),
-                timeHorizon: document.getElementById('timeHorizon'),
-                timeHorizonRange: document.getElementById('timeHorizonRange'),
-                appreciation: document.getElementById('appreciation'),
-                appreciationRange: document.getElementById('appreciationRange'),
-                monthlyRent: document.getElementById('monthlyRent'),
-                monthlyRentRange: document.getElementById('monthlyRentRange'),
-                taxRate: document.getElementById('taxRate'),
-                taxRateRange: document.getElementById('taxRateRange'),
-                actualMaintenanceRate: document.getElementById('actualMaintenanceRate'),
-                actualMaintenanceRateRange: document.getElementById('actualMaintenanceRateRange'),
-            };
-
-            const outputs = {
-                annualSavings: document.getElementById('outputAnnualSavings'),
-                trueCost: document.getElementById('outputTrueCost'),
-                annualRent: document.getElementById('outputAnnualRent'),
-                taxImpact: document.getElementById('outputTaxImpact'),
-                finalProfit: document.getElementById('outputFinalProfit'),
-                roe: document.getElementById('outputROE'),
-                stockReturn: document.getElementById('outputStockReturn'),
-                grossProfit: document.getElementById('outputGrossProfit'),
-                totalCosts: document.getElementById('outputTotalCosts'),
-            };
-
             const formatCurrency = (value, symbol = 'CHF') => {
                 const roundedValue = Math.round(value);
                 const sign = roundedValue < 0 ? '-' : '';
@@ -268,14 +237,14 @@
             };
 
             function calculateAndDisplay() {
-                const propertyValue = parseFloat(inputs.propertyValue.value);
-                const downPaymentPercent = parseFloat(inputs.downPayment.value) / 100;
-                const interestRate = parseFloat(inputs.interestRate.value) / 100;
-                const years = parseInt(inputs.timeHorizon.value);
-                const appreciationRate = parseFloat(inputs.appreciation.value) / 100;
-                const monthlyRent = parseFloat(inputs.monthlyRent.value);
-                const taxRate = parseFloat(inputs.taxRate.value) / 100;
-                const actualMaintenanceRate = parseFloat(inputs.actualMaintenanceRate.value) / 100;
+                const propertyValue = parseFloat(document.getElementById('propertyValue').value);
+                const downPaymentPercent = parseFloat(document.getElementById('downPayment').value) / 100;
+                const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+                const years = parseInt(document.getElementById('timeHorizon').value);
+                const appreciationRate = parseFloat(document.getElementById('appreciation').value) / 100;
+                const monthlyRent = parseFloat(document.getElementById('monthlyRent').value);
+                const taxRate = parseFloat(document.getElementById('taxRate').value) / 100;
+                const actualMaintenanceRate = parseFloat(document.getElementById('actualMaintenanceRate').value) / 100;
 
                 const imputedRentalValueRate = 0.035; 
                 const deductibleMaintenanceRate = 0.20;
@@ -307,23 +276,23 @@
                      stockReturn = (Math.pow(finalEquity / downPaymentAmount, 1 / years) - 1) * 100;
                 }
 
-                outputs.annualSavings.textContent = formatCurrency(netAnnualSavings);
-                outputs.trueCost.textContent = formatCurrency(trueAnnualCostOfOwning);
-                outputs.annualRent.textContent = formatCurrency(annualRentCost);
-                outputs.taxImpact.textContent = formatCurrency(annualTaxImpact);
-                outputs.taxImpact.classList.toggle('text-red-400', annualTaxImpact > 0);
-                outputs.taxImpact.classList.toggle('text-green-400', annualTaxImpact <= 0);
+                document.getElementById('outputAnnualSavings').textContent = formatCurrency(netAnnualSavings);
+                document.getElementById('outputTrueCost').textContent = formatCurrency(trueAnnualCostOfOwning);
+                document.getElementById('outputAnnualRent').textContent = formatCurrency(annualRentCost);
+                document.getElementById('outputTaxImpact').textContent = formatCurrency(annualTaxImpact);
+                document.getElementById('outputTaxImpact').classList.toggle('text-red-400', annualTaxImpact > 0);
+                document.getElementById('outputTaxImpact').classList.toggle('text-green-400', annualTaxImpact <= 0);
 
-                outputs.finalProfit.textContent = formatCurrency(finalNetProfit);
-                outputs.roe.textContent = formatPercent(roe);
-                outputs.stockReturn.textContent = formatPercent(stockReturn, 2);
-                outputs.grossProfit.textContent = formatCurrency(grossProfitOnSale);
-                outputs.totalCosts.textContent = formatCurrency(totalOwnershipCosts);
+                document.getElementById('outputFinalProfit').textContent = formatCurrency(finalNetProfit);
+                document.getElementById('outputROE').textContent = formatPercent(roe);
+                document.getElementById('outputStockReturn').textContent = formatPercent(stockReturn, 2);
+                document.getElementById('outputGrossProfit').textContent = formatCurrency(grossProfitOnSale);
+                document.getElementById('outputTotalCosts').textContent = formatCurrency(totalOwnershipCosts);
 
-                outputs.annualSavings.classList.toggle('text-red-400', netAnnualSavings < 0);
-                outputs.annualSavings.classList.toggle('text-white', netAnnualSavings >= 0);
-                outputs.finalProfit.classList.toggle('text-red-400', finalNetProfit < 0);
-                outputs.finalProfit.classList.toggle('text-white', finalNetProfit >= 0);
+                document.getElementById('outputAnnualSavings').classList.toggle('text-red-400', netAnnualSavings < 0);
+                document.getElementById('outputAnnualSavings').classList.toggle('text-white', netAnnualSavings >= 0);
+                document.getElementById('outputFinalProfit').classList.toggle('text-red-400', finalNetProfit < 0);
+                document.getElementById('outputFinalProfit').classList.toggle('text-white', finalNetProfit >= 0);
             }
 
             function setupListenersForPair(rangeId, numberId) {
@@ -332,7 +301,7 @@
                 if (!rangeInput || !numberInput) return;
 
                 rangeInput.addEventListener('input', () => {
-                    numberInput.value = numberInput.value;
+                    numberInput.value = rangeInput.value;
                     calculateAndDisplay();
                 });
 
@@ -343,16 +312,10 @@
             }
 
             const inputPairs = [
-                ['propertyValueRange', 'propertyValue'],
-                ['downPaymentRange', 'downPayment'],
-                ['interestRateRange', 'interestRate'],
-                ['timeHorizonRange', 'timeHorizon'],
-                ['appreciationRange', 'appreciation'],
-                ['monthlyRentRange', 'monthlyRent'],
-                ['taxRateRange', 'taxRate'],
-                ['actualMaintenanceRateRange', 'actualMaintenanceRate']
+                'propertyValue', 'downPayment', 'interestRate', 'timeHorizon', 
+                'appreciation', 'monthlyRent', 'taxRate', 'actualMaintenanceRate'
             ];
-            inputPairs.forEach(pair => setupListenersForPair(pair[0], pair[1]));
+            inputPairs.forEach(id => setupListenersForPair(id + 'Range', id));
             
             const tooltipEl = document.getElementById('tooltip');
             const tooltipContainers = document.querySelectorAll('.tooltip-container');
